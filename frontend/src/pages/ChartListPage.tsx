@@ -2,8 +2,17 @@ import { useEffect, useState } from "react";
 import { Box, Card, CardContent, Typography, Button } from "@mui/material";
 import { API_BASE } from "../api";
 
+type Chart = {
+  id: string;
+  chartName: string;
+  chartType: string;
+  createdAt: string;
+};
+
+
 export const ChartListPage = () => {
-  const [charts, setCharts] = useState([]);
+  const [charts, setCharts] = useState<Chart[]>([]);
+
 
   useEffect(() => {
     fetch(`${API_BASE}/charts`)
@@ -39,7 +48,6 @@ export const ChartListPage = () => {
                 variant="contained"
                 sx={{ marginTop: 1 }}
                 onClick={() => {
-                  // Navigate to a detailed chart page later
                   alert("Open full chart view coming soon!");
                 }}
               >
