@@ -1,14 +1,16 @@
+version: "1"
+
 services:
   - type: web
     name: analytics-backend
     env: python
-    workingDirectory: backend
+    rootDir: backend
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python app.py"
 
   - type: web
     name: analytics-frontend
     env: node
-    workingDirectory: frontend
+    rootDir: frontend
     buildCommand: "npm install && npm run build"
     startCommand: "npm install -g serve && serve -s dist -l 3000"
