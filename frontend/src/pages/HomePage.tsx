@@ -4,7 +4,7 @@ import { styled } from "@mui/material";
 import { pxToRem } from "../components/utils";
 import { useNavigate } from "react-router-dom";
 
-const StyledDiv = styled('div')(({ theme }) => ({
+const StyledDiv = styled('div')(() => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
