@@ -2,10 +2,10 @@
 ![React](https://img.shields.io/badge/Frontend-React-blue?logo=react)  
 ![TypeScript](https://img.shields.io/badge/TypeScript-4.0+-3178C6?logo=typescript&logoColor=white)  
 ![MUI](https://img.shields.io/badge/UI-MUI-007FFF?logo=mui&logoColor=white)  
-![Node.js](https://img.shields.io/badge/Backend-Node.js-5FA04E?logo=node.js&logoColor=white)  
-![Express](https://img.shields.io/badge/API-Express.js-black?logo=express)  
 ![ECharts](https://img.shields.io/badge/Charts-ECharts-red?logo=apache)  
-![Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?logo=render)  
+![Python](https://img.shields.io/badge/Backend-Python-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Framework-Flask-black?logo=flask&logoColor=white)
+
 
 A high-performance **Analytics Dashboard** built with React, TypeScript, MUI, and ECharts.  
 Designed to visualize data interactively with dynamic charts, filters, and smooth UI interactions.  
