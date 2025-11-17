@@ -14,8 +14,8 @@ Fully responsive, production-ready, and deployed on **Render** (Frontend + Backe
 ---
 
 ## 🚀 Live Demo  
-🔗 **Frontend:** *https://analytics-dashboard-frontend.onrender.com*  
-🔗 **Backend API:** *https://analytics-dashboard-backend.onrender.com/api*
+🔗 **Frontend:** *https://analytics-uqhv.onrender.com*  
+🔗 **Backend API:** *https://analytics-80al.onrender.com*
 
 ---
 
