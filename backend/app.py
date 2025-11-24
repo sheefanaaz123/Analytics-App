@@ -1,9 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import json, os, datetime
 
 app = Flask(__name__)
-CORS(app)
+
+CORS(app,
+     resources={r"/*": {"origins": "*"}},
+     supports_credentials=True,
+     methods=["GET", "POST", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type"]
+)
 
 DB_FILE = "charts.json"
 
@@ -20,6 +26,15 @@ def save_charts(data):
     with open(DB_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
+
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
 
 @app.route("/save-chart", methods=["POST"])
 def save_chart():
@@ -53,6 +68,18 @@ def save_chart():
 @app.route("/charts", methods=["GET"])
 def get_charts():
     return jsonify(load_charts())
+
+
+@app.route("/delete-chart/<int:chart_id>", methods=["DELETE"])
+def delete_chart(chart_id):
+    charts = load_charts()
+    updated_charts = [c for c in charts if c["id"] != chart_id]
+
+    if len(updated_charts) == len(charts):
+        return jsonify({"error": "Chart not found"}), 404
+
+    save_charts(updated_charts)
+    return jsonify({"message": "Chart deleted"}), 200
 
 
 if __name__ == "__main__":
