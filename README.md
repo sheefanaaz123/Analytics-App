@@ -24,6 +24,66 @@ The goal is to simulate a real-world product environment and demonstrate strong 
 
 ---
 
-## 🏗️ Architecture
+Key principles:
+- Component-driven development
+- Separation of layout and business UI
+- Centralized theme management
+- Reusability and consistency
 
-The project follows a scalable and maintainable structure:
+---
+
+## 🧠 Why This Project Matters
+
+Modern products rely on dashboards for quick decision-making.
+
+This dashboard:
+- Helps stakeholders track revenue, users, and performance in one place
+- Improves data readability through visual hierarchy
+- Provides a scalable foundation for future analytics modules
+- Demonstrates real-world frontend system design
+
+---
+
+## 🛠️ Tech Stack
+
+- React
+- TypeScript
+- Styled-components
+- Ant Design
+- Apache ECharts
+- React Router
+
+---
+
+## 🎨 Theming System
+
+The application uses a global theme powered by Context API and design tokens.
+
+This enables:
+- Instant theme switching
+- Consistent styling across all components
+- Easy white-labeling for different products
+
+---
+
+## 📊 Pages
+
+### Dashboard
+- KPI overview
+- Revenue trend chart
+- Traffic sources
+
+### Analytics
+- Advanced data visualizations
+- Performance breakdown
+
+### Reports
+- Report generation UI
+- Status tracking
+- Filters & date range selection
+
+### Settings
+- Profile configuration
+- Appearance controls
+- Notification & security options
+
