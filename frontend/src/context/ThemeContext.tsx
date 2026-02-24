@@ -1,66 +1,32 @@
-import {
-  createContext,
-  useMemo,
-  useState,
-  useEffect,
-  type ReactNode,
-} from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from "react";
+import type { ReactNode } from "react";
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { themes } from "../theme/theme";
 
-interface ThemeContextProps {
-  mode: "light" | "dark";
-  primaryColor: string;
-  toggleTheme: () => void;
-  setPrimaryColor: (color: string) => void;
-}
-
-export const ThemeContext = createContext<ThemeContextProps>({
-  mode: "light",
-  primaryColor: "#1976d2",
+export const AppThemeContext = createContext({
+  mode: "dark",
   toggleTheme: () => {},
-  setPrimaryColor: () => {},
 });
 
-interface Props {
-  children: ReactNode;
-}
-
-export const CustomThemeProvider = ({ children }: Props) => {
-  const [mode, setMode] = useState<"light" | "dark">(
-    (localStorage.getItem("themeMode") as "light" | "dark") || "light",
-  );
-
-  const [primaryColor, setPrimaryColor] = useState(
-    localStorage.getItem("primaryColor") || "#1976d2",
-  );
-
-  useEffect(() => {
-    localStorage.setItem("themeMode", mode);
-  }, [mode]);
-
-  useEffect(() => {
-    localStorage.setItem("primaryColor", primaryColor);
-  }, [primaryColor]);
-
-  const toggleTheme = () =>
-    setMode((prev) => (prev === "light" ? "dark" : "light"));
-
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode,
-          primary: { main: primaryColor },
-        },
-      }),
-    [mode, primaryColor],
-  );
-
+export const AppThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [mode, setMode] = useState<"dark" | "light">("dark");
+  const toggleTheme = () => {
+    setMode((prev) => (prev === "dark" ? "light" : "dark"));
+  };
   return (
-    <ThemeContext.Provider
-      value={{ mode, primaryColor, toggleTheme, setPrimaryColor }}
-    >
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </ThemeContext.Provider>
+    <AppThemeContext.Provider value={{ mode, toggleTheme }}>
+      <StyledThemeProvider theme={themes[mode]}>{children}</StyledThemeProvider>
+    </AppThemeContext.Provider>
   );
+};
+
+export const useThemeContext = () => {
+  const data = useContext(AppThemeContext);
+
+  if (!data) {
+    throw new Error("useThemeContext must be used inside AppThemeProvider");
+  }
+
+  return data;
 };
