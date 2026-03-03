@@ -39,6 +39,11 @@ const StyledCard = styled(Card)`
   .ant-card-body {
     padding: 0;
   }
+
+  .ant-form-item-label > label {
+    color: ${({ theme }) => theme.colors.text.primary} !important;
+    font-weight: 500;
+  }
 `;
 
 const SettingItem = styled.div`
@@ -76,18 +81,47 @@ const ActionArea = styled.div`
   align-items: center;
 `;
 
+interface ProfileFormValues {
+  fullName: string;
+  email: string;
+}
+
 export const Settings = () => {
   const { mode, toggleTheme } = useThemeContext();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const [notifs, setNotifs] = useState({
+    email: true,
+    push: false,
+    twoFactor: false,
+  });
 
   const handleSaveProfile = async (values: ProfileFormValues) => {
     setLoading(true);
-    setTimeout(() => {
-      console.log("Saved Values:", values);
+    const hide = message.loading("Updating profile...", 0);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Final Submission:", { ...values, ...notifs });
+
       message.success("Profile updated successfully");
+      setIsDirty(false);
+    } catch (error) {
+      message.error("Failed to update profile");
+      console.error("Error updating profile:", error);
+    } finally {
+      hide();
       setLoading(false);
-    }, 1000);
+    }
+  };
+
+  const handleToggle = (key: keyof typeof notifs) => (checked: boolean) => {
+    setNotifs((prev) => ({ ...prev, [key]: checked }));
+    message.info(
+      `${key.charAt(0).toUpperCase() + key.slice(1)} setting updated`,
+    );
   };
 
   return (
@@ -103,19 +137,41 @@ export const Settings = () => {
                 email: "sheefa.naaz@example.com",
               }}
               onFinish={handleSaveProfile}
+              onValuesChange={() => setIsDirty(true)}
               style={{ padding: "24px" }}
             >
-              <Form.Item name="fullName" label="Full Name">
+              <Form.Item
+                name="fullName"
+                label="Full Name"
+                rules={[{ required: true, message: "Please enter your name" }]}
+              >
                 <Input placeholder="Enter your name" size="large" />
               </Form.Item>
-              <Form.Item name="email" label="Email Address">
+
+              <Form.Item
+                name="email"
+                label="Email Address"
+                rules={[
+                  { required: true, message: "Please enter your email" },
+                  {
+                    type: "email",
+                    message: "Please enter a valid email address",
+                  },
+                ]}
+              >
                 <Input
                   type="email"
                   placeholder="Enter your email"
                   size="large"
                 />
               </Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading}>
+
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                disabled={!isDirty}
+              >
                 Save Changes
               </Button>
             </Form>
@@ -140,16 +196,20 @@ export const Settings = () => {
                 <p>Receive weekly analytics reports via email</p>
               </LabelArea>
               <ActionArea>
-                <Switch defaultChecked />
+                <Switch
+                  checked={notifs.email}
+                  onChange={handleToggle("email")}
+                />
               </ActionArea>
             </SettingItem>
+
             <SettingItem>
               <LabelArea>
                 <h4>Push Notifications</h4>
                 <p>Receive alerts about failed reports directly in browser</p>
               </LabelArea>
               <ActionArea>
-                <Switch />
+                <Switch checked={notifs.push} onChange={handleToggle("push")} />
               </ActionArea>
             </SettingItem>
           </StyledCard>
@@ -161,11 +221,18 @@ export const Settings = () => {
                 <p>Add an extra layer of security to your account</p>
               </LabelArea>
               <ActionArea>
-                <Switch />
+                <Switch
+                  checked={notifs.twoFactor}
+                  onChange={handleToggle("twoFactor")}
+                />
               </ActionArea>
             </SettingItem>
             <div style={{ padding: "20px 24px" }}>
-              <Button>Update Password</Button>
+              <Button
+                onClick={() => message.info("Redirecting to password reset...")}
+              >
+                Update Password
+              </Button>
             </div>
           </StyledCard>
         </SettingsGrid>
