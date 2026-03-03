@@ -120,7 +120,6 @@ export const Settings = () => {
             </Form>
           </StyledCard>
 
-          {/* Appearance Card */}
           <StyledCard title="Appearance">
             <SettingItem>
               <LabelArea>
@@ -163,7 +162,6 @@ export const Settings = () => {
             </SettingItem>
           </StyledCard>
 
-          {/* Security Card */}
           <StyledCard title="Security">
             <SettingItem>
               <LabelArea>
