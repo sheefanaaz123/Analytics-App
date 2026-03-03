@@ -24,6 +24,16 @@ const StyledCard = styled(Card)`
   border-radius: 12px !important;
   overflow: hidden;
 
+  .ant-btn-primary {
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      color: ${({ theme }) => theme.colors.text.primary};
+    }
+  }
+
   .ant-card-head {
     background: ${({ theme }) => theme.colors.background.elevated};
     border-bottom: 1px solid ${({ theme }) => theme.colors.border.default};
@@ -90,7 +100,7 @@ export const Settings = () => {
   const { mode, toggleTheme } = useThemeContext();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
 
   const [notifs, setNotifs] = useState({
     email: true,
@@ -98,23 +108,35 @@ export const Settings = () => {
     twoFactor: false,
   });
 
+  const initialValues = {
+    fullName: "Sheefa Naaz",
+    email: "sheefa.naaz@example.com",
+  };
+
   const handleSaveProfile = async (values: ProfileFormValues) => {
     setLoading(true);
+    console.log("Saving profile with values:", values);
     const hide = message.loading("Updating profile...", 0);
-
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Final Submission:", { ...values, ...notifs });
-
       message.success("Profile updated successfully");
-      setIsDirty(false);
+
+      setIsInvalid(false);
     } catch (error) {
       message.error("Failed to update profile");
-      console.error("Error updating profile:", error);
+      console.error("Profile update error:", error);
     } finally {
       hide();
       setLoading(false);
     }
+  };
+
+  const handleValuesChange = (_changedValues: Partial<ProfileFormValues>, allValues: ProfileFormValues) => {
+    const hasChanged =
+      allValues.fullName !== initialValues.fullName ||
+      allValues.email !== initialValues.email;
+
+    setIsInvalid(hasChanged);
   };
 
   const handleToggle = (key: keyof typeof notifs) => (checked: boolean) => {
@@ -132,12 +154,9 @@ export const Settings = () => {
             <Form
               form={form}
               layout="vertical"
-              initialValues={{
-                fullName: "Sheefa Naaz",
-                email: "sheefa.naaz@example.com",
-              }}
+              initialValues={initialValues}
               onFinish={handleSaveProfile}
-              onValuesChange={() => setIsDirty(true)}
+              onValuesChange={handleValuesChange}
               style={{ padding: "24px" }}
             >
               <Form.Item
@@ -170,7 +189,7 @@ export const Settings = () => {
                 type="primary"
                 htmlType="submit"
                 loading={loading}
-                disabled={!isDirty}
+                disabled={!isInvalid}
               >
                 Save Changes
               </Button>
