@@ -14,6 +14,7 @@ const SettingsGrid = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding: 0 90px;
   width: 100%;
 `;
 
@@ -91,7 +92,7 @@ export const Settings = () => {
 
   return (
     <PageContainer>
-      <DashboardSection title="Settings">
+      <DashboardSection title="">
         <SettingsGrid>
           <StyledCard title="Profile Information">
             <Form
@@ -128,15 +129,6 @@ export const Settings = () => {
               </LabelArea>
               <ActionArea>
                 <Switch checked={mode === "dark"} onChange={toggleTheme} />
-              </ActionArea>
-            </SettingItem>
-            <SettingItem>
-              <LabelArea>
-                <h4>Compact Mode</h4>
-                <p>Reduce spacing to see more data at once</p>
-              </LabelArea>
-              <ActionArea>
-                <Switch />
               </ActionArea>
             </SettingItem>
           </StyledCard>

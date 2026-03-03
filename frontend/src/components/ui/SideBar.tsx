@@ -24,6 +24,13 @@ const StyledSider = styled(Sider)<{ $bg: string; $border: string }>`
     flex-direction: column;
     height: 100%;
   }
+
+  .ant-layout-sider-trigger {
+    background: ${({ $bg }) => $bg} !important;
+    svg {
+      color: ${({ theme }) => theme.colors.text.secondary} !important;
+    }
+  }
 `;
 
 const StyledMenu = styled(Menu)`
