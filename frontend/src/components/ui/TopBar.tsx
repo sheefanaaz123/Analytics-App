@@ -12,7 +12,7 @@ const StyledTopBar = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 50px;
+  font-size: 40px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text.primary};
   height: 64px;
