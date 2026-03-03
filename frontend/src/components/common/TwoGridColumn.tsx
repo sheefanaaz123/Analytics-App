@@ -5,7 +5,7 @@ export const TwoColumnGrid = styled.div`
   grid-template-columns: 2fr 1fr;
   gap: ${({ theme }) => theme.spacing.lg};
 
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
+  @media (max-width: 1300px) {
+    grid-template-columns: repeat(1, 1fr);
   }
 `;

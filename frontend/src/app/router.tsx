@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout/DashboardLayout";
-import Dashboard from "../pages/Dashboard";
+import Overview from "../pages/Overview";
 import { Settings } from "../pages/Setting";
 import { Analytics } from "../pages/Analytics";
 import { Reports } from "../pages/Reports";
@@ -12,7 +12,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <Overview />,
       },
       {
         path: "/settings",

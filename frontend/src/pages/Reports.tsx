@@ -1,7 +1,9 @@
-import { Table, Tag, Button, Select, DatePicker } from "antd";
+import { Table, Tag, Button, Select, DatePicker, message } from "antd";
 import styled from "styled-components";
 import PageContainer from "../components/layout/PageContainer";
 import { DashboardSection } from "../components/common/DashboardSection";
+import { useMemo, useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -41,56 +43,108 @@ const StyledTable = styled(Table)`
     border: 1px solid ${({ theme }) => theme.colors.border.strong};
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
+
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background: ${({ theme }) => theme.colors.border.default} !important;
+  }
+  .ant-table-tbody > tr:hover > td {
+    color: ${({ theme }) => theme.colors.text.primary};
+  }
 `;
 
-const data = [
+const initialData = [
   {
     key: "1",
     name: "Sales Report",
-    created: "12 Feb 2026",
+    created: "2026-02-12",
     status: "Completed",
+    type: "Sales",
   },
   {
     key: "2",
     name: "User Growth",
-    created: "10 Feb 2026",
+    created: "2026-02-10",
     status: "Processing",
+    type: "Users",
   },
   {
     key: "3",
     name: "Revenue Report",
-    created: "08 Feb 2026",
+    created: "2026-02-08",
     status: "Failed",
+    type: "Sales",
   },
 ];
 
 export const Reports = () => {
+  const [reports, setReports] = useState(initialData);
+  const [category, setCategory] = useState("All");
+  const [dateRange, setDateRange] = useState<
+    [Dayjs | null, Dayjs | null] | null
+  >(null);
+
+  const filteredData = useMemo(() => {
+    return reports.filter((item) => {
+      const matchesCategory = category === "All" || item.type === category;
+
+      let matchesDate = true;
+      if (dateRange && dateRange[0] && dateRange[1]) {
+        const start = dateRange[0].startOf("day");
+        const end = dateRange[1].endOf("day");
+        const itemDate = dayjs(item.created);
+
+        matchesDate = !itemDate.isBefore(start) && !itemDate.isAfter(end);
+      }
+
+      return matchesCategory && matchesDate;
+    });
+  }, [reports, category, dateRange]);
+
+  const stats = {
+    total: filteredData.length,
+    completed: filteredData.filter((r) => r.status === "Completed").length,
+    processing: filteredData.filter((r) => r.status === "Processing").length,
+    failed: filteredData.filter((r) => r.status === "Failed").length,
+  };
+
+  const handleGenerate = () => {
+    const newReport = {
+      key: Date.now().toString(),
+      name: `New ${category !== "All" ? category : "General"} Report`,
+      created: dayjs().format("YYYY-MM-DD"),
+      status: "Processing",
+      type: category === "All" ? "Sales" : category,
+    };
+    setReports([newReport, ...reports]);
+    message.success("Report generation started!");
+  };
+
   const columns = [
-    {
-      title: "Report Name",
-      dataIndex: "name",
-    },
+    { title: "Report Name", dataIndex: "name" },
     {
       title: "Created On",
       dataIndex: "created",
+      render: (date: string) => dayjs(date).format("DD MMM YYYY"),
     },
     {
       title: "Status",
       dataIndex: "status",
       render: (status: string) => {
-        const color =
-          status === "Completed"
-            ? "green"
-            : status === "Processing"
-              ? "blue"
-              : "red";
-
-        return <Tag color={color}>{status}</Tag>;
+        const colors: Record<string, string> = {
+          Completed: "green",
+          Processing: "blue",
+          Failed: "red",
+        };
+        return <Tag color={colors[status]}>{status}</Tag>;
       },
     },
     {
       title: "Action",
-      render: () => <Button type="link">Download</Button>,
+      render: () => (
+        <Button type="link" onClick={() => message.info("Downloading...")}>
+          Download
+        </Button>
+      ),
     },
   ];
 
@@ -98,42 +152,46 @@ export const Reports = () => {
     <PageContainer>
       <DashboardSection title="Reports">
         <Filters>
-          <RangePicker />
+          <RangePicker onChange={(values) => setDateRange(values)} />
           <Select
             defaultValue="All"
+            onChange={(value) => setCategory(value)}
             options={[
               { value: "All", label: "All Reports" },
               { value: "Sales", label: "Sales" },
               { value: "Users", label: "Users" },
             ]}
           />
-          <Button type="primary">Generate Report</Button>
+          <Button type="primary" onClick={handleGenerate}>
+            Generate Report
+          </Button>
         </Filters>
       </DashboardSection>
 
       <CardGrid>
         <Card>
-          <CardTitle>Total Reports</CardTitle>
-          <CardValue>24</CardValue>
+          <CardTitle>Total</CardTitle>
+          <CardValue>{stats.total}</CardValue>
         </Card>
-
         <Card>
           <CardTitle>Completed</CardTitle>
-          <CardValue>18</CardValue>
+          <CardValue>{stats.completed}</CardValue>
         </Card>
-
         <Card>
           <CardTitle>Processing</CardTitle>
-          <CardValue>4</CardValue>
+          <CardValue>{stats.processing}</CardValue>
         </Card>
-
         <Card>
           <CardTitle>Failed</CardTitle>
-          <CardValue>2</CardValue>
+          <CardValue>{stats.failed}</CardValue>
         </Card>
       </CardGrid>
 
-      <StyledTable columns={columns} dataSource={data} pagination={false} />
+      <StyledTable
+        columns={columns}
+        dataSource={filteredData}
+        pagination={{ pageSize: 5 }}
+      />
     </PageContainer>
   );
 };

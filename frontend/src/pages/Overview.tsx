@@ -19,16 +19,17 @@ const ChartCard = styled.div`
   position: relative;
 `;
 
-export const Analytics = () => {
+const Overview = () => {
   const theme = useTheme();
 
   const revenueRef = useRef<ReactECharts>(null);
-  const trafficRef = useRef<ReactECharts>(null);
+  const userGrowthRef = useRef<ReactECharts>(null);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
       if (revenueRef.current) revenueRef.current.getEchartsInstance().resize();
-      if (trafficRef.current) trafficRef.current.getEchartsInstance().resize();
+      if (userGrowthRef.current)
+        userGrowthRef.current.getEchartsInstance().resize();
     });
 
     const containers = document.querySelectorAll(".echarts-for-react");
@@ -38,19 +39,35 @@ export const Analytics = () => {
   }, []);
 
   const kpiData = [
-    { title: "Total Revenue (MTD)", value: "$30,000" },
-    { title: "Marketing Spend (MTD)", value: "$17,000" },
-    { title: "ROAS", value: "1.76x" },
-    { title: "Customer Acquisition Cost", value: "$42" },
+    {
+      title: "Revenue (This Month)",
+      value: "$30,000",
+      trend: "+12% vs last month",
+      positive: true,
+    },
+    {
+      title: "New Customers",
+      value: "712",
+      trend: "+8% vs last month",
+      positive: true,
+    },
+    {
+      title: "Active Users",
+      value: "5,482",
+      trend: "+5% vs last month",
+      positive: true,
+    },
+    {
+      title: "Conversion Rate",
+      value: "5.4%",
+      trend: "-1.2% vs last month",
+      positive: false,
+    },
   ];
-
   const revenueOption = useMemo(
     () => ({
       backgroundColor: "transparent",
       tooltip: { trigger: "axis" },
-      legend: {
-        textStyle: { color: theme.colors.text.secondary },
-      },
       grid: {
         left: "8%",
         right: "8%",
@@ -60,87 +77,84 @@ export const Analytics = () => {
       xAxis: {
         type: "category",
         name: "Month",
-        nameTextStyle: { color: theme.colors.text.secondary },
         data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
         axisLine: { lineStyle: { color: theme.colors.text.secondary } },
         axisLabel: { color: theme.colors.text.secondary },
       },
       yAxis: {
         type: "value",
-        name: "Amount (USD)",
-        nameTextStyle: { color: theme.colors.text.secondary },
+        name: "Revenue (USD)",
         splitLine: {
           lineStyle: { color: theme.colors.border.default },
         },
-        axisLabel: {
-          color: theme.colors.text.secondary,
-          formatter: "${value}",
-        },
+        axisLabel: { color: theme.colors.text.secondary },
       },
       series: [
         {
-          name: "Revenue",
-          data: [12000, 15000, 18000, 21000, 25000, 30000],
-          type: "bar",
-          barWidth: "30%",
-          itemStyle: {
-            color: theme.colors.primary.main,
-            borderRadius: [6, 6, 0, 0],
-          },
-        },
-        {
-          name: "Ad Spend",
-          data: [8000, 9000, 11000, 13000, 15000, 17000],
+          name: "Revenue (2025)",
+          data: [4000, 3000, 5000, 4780, 5890, 6390],
           type: "line",
           smooth: true,
-          lineStyle: { width: 3 },
+        },
+        {
+          name: "Revenue (2024)",
+          data: [3500, 2800, 4200, 4500, 5200, 6000],
+          type: "line",
+          smooth: true,
+          lineStyle: { type: "dashed" },
         },
       ],
     }),
     [theme],
   );
 
-  const trafficOption = useMemo(
+  const usersGrowthOption = useMemo(
     () => ({
       backgroundColor: "transparent",
-      tooltip: {
-        trigger: "item",
-        formatter: "{b}<br/>{c} sessions ({d}%)",
+      grid: {
+        left: "8%",
+        right: "13%",
+        bottom: "10%",
+        containLabel: true,
       },
-      legend: {
-        bottom: "0%",
-        textStyle: { color: theme.colors.text.secondary },
-        itemWidth: 12,
-        itemHeight: 12,
+      xAxis: {
+        type: "category",
+        name: "Month",
+        data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        axisLine: { lineStyle: { color: theme.colors.text.secondary } },
+        axisLabel: { color: theme.colors.text.secondary },
+      },
+      yAxis: {
+        type: "value",
+        name: "Active Users",
+        axisLabel: { color: theme.colors.text.secondary },
+        splitLine: {
+          lineStyle: { color: theme.colors.border.default },
+        },
       },
       series: [
         {
-          name: "Traffic Sources",
-          type: "pie",
-          radius: ["45%", "70%"],
-          center: ["50%", "45%"],
-          avoidLabelOverlap: true,
-          label: {
-            show: true,
-            formatter: "{b}\n{d}%",
-            color: theme.colors.text.primary,
+          name: "Active Users",
+          type: "bar",
+          data: [2200, 2800, 3400, 3900, 4700, 5482],
+          barWidth: "50%",
+          itemStyle: {
+            color: theme.colors.primary.light,
+            borderRadius: [6, 6, 0, 0],
           },
-          data: [
-            { value: 18500, name: "Organic Search" },
-            { value: 14200, name: "Google Ads" },
-            { value: 9800, name: "Social Media" },
-            { value: 6500, name: "Referral" },
-            { value: 3200, name: "Email Campaigns" },
-          ],
         },
       ],
+      tooltip: {
+        trigger: "axis",
+        formatter: "{b}<br/>Users: {c}",
+      },
     }),
     [theme],
   );
 
   return (
     <PageContainer>
-      <DashboardSection title="Analytics">
+      <DashboardSection title="Overview">
         <CardGrid>
           {kpiData.map((item) => (
             <KpiCard key={item.title} {...item} />
@@ -159,8 +173,8 @@ export const Analytics = () => {
 
           <ChartCard>
             <ReactECharts
-              ref={trafficRef}
-              option={trafficOption}
+              ref={userGrowthRef}
+              option={usersGrowthOption}
               style={{ height: "100%", width: "100%" }}
               opts={{ renderer: "canvas" }}
             />
@@ -170,3 +184,5 @@ export const Analytics = () => {
     </PageContainer>
   );
 };
+
+export default Overview;
