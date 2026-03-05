@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ReactECharts from "echarts-for-react";
 import styled, { useTheme } from "styled-components";
-import { useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import PageContainer from "../components/layout/PageContainer";
 import { KpiCard } from "../components/ui/KpiCard";
 import { DashboardSection } from "../components/common/DashboardSection";
@@ -13,7 +14,6 @@ const ChartCard = styled.div`
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: ${({ theme }) => theme.spacing.md};
   height: 420px;
-
   min-width: 0;
   overflow: hidden;
   position: relative;
@@ -21,106 +21,87 @@ const ChartCard = styled.div`
 
 const Overview = () => {
   const theme = useTheme();
-
   const revenueRef = useRef<ReactECharts>(null);
   const userGrowthRef = useRef<ReactECharts>(null);
 
+  const [kpis, setKpis] = useState<any[]>([]);
+  const [revenueData, setRevenueData] = useState<any | null>(null);
+  const [usersGrowthData, setUsersGrowthData] = useState<any | null>(null);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/overview/kpis")
+      .then((res) => res.json())
+      .then(setKpis)
+      .catch((err) => console.error("Error fetching KPIs:", err));
+
+    fetch("http://127.0.0.1:5000/api/overview/revenue")
+      .then((res) => res.json())
+      .then(setRevenueData)
+      .catch((err) => console.error("Error fetching revenue data:", err));
+
+    fetch("http://127.0.0.1:5000/api/overview/users-growth")
+      .then((res) => res.json())
+      .then(setUsersGrowthData)
+      .catch((err) => console.error("Error fetching users growth data:", err));
+  }, []);
+
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
-      if (revenueRef.current) revenueRef.current.getEchartsInstance().resize();
-      if (userGrowthRef.current)
-        userGrowthRef.current.getEchartsInstance().resize();
+      revenueRef.current?.getEchartsInstance().resize();
+      userGrowthRef.current?.getEchartsInstance().resize();
     });
-
-    const containers = document.querySelectorAll(".echarts-for-react");
-    containers.forEach((container) => resizeObserver.observe(container));
-
+    document
+      .querySelectorAll(".echarts-for-react")
+      .forEach((el) => resizeObserver.observe(el));
     return () => resizeObserver.disconnect();
   }, []);
 
-  const kpiData = [
-    {
-      title: "Revenue (This Month)",
-      value: "$30,000",
-      trend: "+12% vs last month",
-      positive: true,
-    },
-    {
-      title: "New Customers",
-      value: "712",
-      trend: "+8% vs last month",
-      positive: true,
-    },
-    {
-      title: "Active Users",
-      value: "5,482",
-      trend: "+5% vs last month",
-      positive: true,
-    },
-    {
-      title: "Conversion Rate",
-      value: "5.4%",
-      trend: "-1.2% vs last month",
-      positive: false,
-    },
-  ];
-  const revenueOption = useMemo(
-    () => ({
+  const revenueOption = useMemo(() => {
+    if (!revenueData) return {};
+    return {
       backgroundColor: "transparent",
       tooltip: { trigger: "axis" },
-      grid: {
-        left: "8%",
-        right: "8%",
-        bottom: "10%",
-        containLabel: true,
-      },
+      grid: { left: "8%", right: "8%", bottom: "10%", containLabel: true },
       xAxis: {
         type: "category",
         name: "Month",
-        data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        data: revenueData.months,
         axisLine: { lineStyle: { color: theme.colors.text.secondary } },
         axisLabel: { color: theme.colors.text.secondary },
       },
       yAxis: {
         type: "value",
         name: "Revenue (USD)",
-        splitLine: {
-          lineStyle: { color: theme.colors.border.default },
-        },
+        splitLine: { lineStyle: { color: theme.colors.border.default } },
         axisLabel: { color: theme.colors.text.secondary },
       },
       series: [
         {
           name: "Revenue (2025)",
-          data: [4000, 3000, 5000, 4780, 5890, 6390],
+          data: revenueData.data2025,
           type: "line",
           smooth: true,
         },
         {
           name: "Revenue (2024)",
-          data: [3500, 2800, 4200, 4500, 5200, 6000],
+          data: revenueData.data2024,
           type: "line",
           smooth: true,
           lineStyle: { type: "dashed" },
         },
       ],
-    }),
-    [theme],
-  );
+    };
+  }, [revenueData, theme]);
 
-  const usersGrowthOption = useMemo(
-    () => ({
+  const usersGrowthOption = useMemo(() => {
+    if (!usersGrowthData) return {};
+    return {
       backgroundColor: "transparent",
-      grid: {
-        left: "8%",
-        right: "13%",
-        bottom: "10%",
-        containLabel: true,
-      },
+      grid: { left: "8%", right: "13%", bottom: "10%", containLabel: true },
       xAxis: {
         type: "category",
         name: "Month",
-        data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        data: usersGrowthData.months,
         axisLine: { lineStyle: { color: theme.colors.text.secondary } },
         axisLabel: { color: theme.colors.text.secondary },
       },
@@ -128,15 +109,13 @@ const Overview = () => {
         type: "value",
         name: "Active Users",
         axisLabel: { color: theme.colors.text.secondary },
-        splitLine: {
-          lineStyle: { color: theme.colors.border.default },
-        },
+        splitLine: { lineStyle: { color: theme.colors.border.default } },
       },
       series: [
         {
           name: "Active Users",
           type: "bar",
-          data: [2200, 2800, 3400, 3900, 4700, 5482],
+          data: usersGrowthData.data,
           barWidth: "50%",
           itemStyle: {
             color: theme.colors.primary.light,
@@ -144,19 +123,15 @@ const Overview = () => {
           },
         },
       ],
-      tooltip: {
-        trigger: "axis",
-        formatter: "{b}<br/>Users: {c}",
-      },
-    }),
-    [theme],
-  );
+      tooltip: { trigger: "axis", formatter: "{b}<br/>Users: {c}" },
+    };
+  }, [usersGrowthData, theme]);
 
   return (
     <PageContainer>
       <DashboardSection title="Overview">
         <CardGrid>
-          {kpiData.map((item) => (
+          {kpis.map((item) => (
             <KpiCard key={item.title} {...item} />
           ))}
         </CardGrid>
@@ -167,7 +142,6 @@ const Overview = () => {
               ref={revenueRef}
               option={revenueOption}
               style={{ height: "100%", width: "100%" }}
-              opts={{ renderer: "canvas" }}
             />
           </ChartCard>
 
@@ -176,7 +150,6 @@ const Overview = () => {
               ref={userGrowthRef}
               option={usersGrowthOption}
               style={{ height: "100%", width: "100%" }}
-              opts={{ renderer: "canvas" }}
             />
           </ChartCard>
         </TwoColumnGrid>

@@ -1,6 +1,6 @@
 import ReactECharts from "echarts-for-react";
 import styled, { useTheme } from "styled-components";
-import { useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import PageContainer from "../components/layout/PageContainer";
 import { KpiCard } from "../components/ui/KpiCard";
 import { DashboardSection } from "../components/common/DashboardSection";
@@ -13,7 +13,6 @@ const ChartCard = styled.div`
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: ${({ theme }) => theme.spacing.md};
   height: 420px;
-
   min-width: 0;
   overflow: hidden;
   position: relative;
@@ -21,47 +20,55 @@ const ChartCard = styled.div`
 
 export const Analytics = () => {
   const theme = useTheme();
-
   const revenueRef = useRef<ReactECharts>(null);
   const trafficRef = useRef<ReactECharts>(null);
 
+  const [kpis, setKpis] = useState<any[]>([]);
+  const [revenueData, setRevenueData] = useState<any>({
+    months: [],
+    revenue: [],
+    ad_spend: [],
+  });
+  const [trafficData, setTrafficData] = useState<any[]>([]);
+
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
-      if (revenueRef.current) revenueRef.current.getEchartsInstance().resize();
-      if (trafficRef.current) trafficRef.current.getEchartsInstance().resize();
+      revenueRef.current?.getEchartsInstance().resize();
+      trafficRef.current?.getEchartsInstance().resize();
     });
-
     const containers = document.querySelectorAll(".echarts-for-react");
     containers.forEach((container) => resizeObserver.observe(container));
-
     return () => resizeObserver.disconnect();
   }, []);
 
-  const kpiData = [
-    { title: "Total Revenue (MTD)", value: "$30,000" },
-    { title: "Marketing Spend (MTD)", value: "$17,000" },
-    { title: "ROAS", value: "1.76x" },
-    { title: "Customer Acquisition Cost", value: "$42" },
-  ];
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/analytics/kpis")
+      .then((res) => res.json())
+      .then(setKpis)
+      .catch(console.error);
+
+    fetch("http://127.0.0.1:5000/api/analytics/revenue")
+      .then((res) => res.json())
+      .then(setRevenueData)
+      .catch(console.error);
+
+    fetch("http://127.0.0.1:5000/api/analytics/traffic")
+      .then((res) => res.json())
+      .then(setTrafficData)
+      .catch(console.error);
+  }, []);
 
   const revenueOption = useMemo(
     () => ({
       backgroundColor: "transparent",
       tooltip: { trigger: "axis" },
-      legend: {
-        textStyle: { color: theme.colors.text.secondary },
-      },
-      grid: {
-        left: "8%",
-        right: "8%",
-        bottom: "10%",
-        containLabel: true,
-      },
+      legend: { textStyle: { color: theme.colors.text.secondary } },
+      grid: { left: "8%", right: "8%", bottom: "10%", containLabel: true },
       xAxis: {
         type: "category",
         name: "Month",
         nameTextStyle: { color: theme.colors.text.secondary },
-        data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        data: revenueData.months,
         axisLine: { lineStyle: { color: theme.colors.text.secondary } },
         axisLabel: { color: theme.colors.text.secondary },
       },
@@ -69,9 +76,7 @@ export const Analytics = () => {
         type: "value",
         name: "Amount (USD)",
         nameTextStyle: { color: theme.colors.text.secondary },
-        splitLine: {
-          lineStyle: { color: theme.colors.border.default },
-        },
+        splitLine: { lineStyle: { color: theme.colors.border.default } },
         axisLabel: {
           color: theme.colors.text.secondary,
           formatter: "${value}",
@@ -80,7 +85,7 @@ export const Analytics = () => {
       series: [
         {
           name: "Revenue",
-          data: [12000, 15000, 18000, 21000, 25000, 30000],
+          data: revenueData.revenue,
           type: "bar",
           barWidth: "30%",
           itemStyle: {
@@ -90,23 +95,20 @@ export const Analytics = () => {
         },
         {
           name: "Ad Spend",
-          data: [8000, 9000, 11000, 13000, 15000, 17000],
+          data: revenueData.ad_spend,
           type: "line",
           smooth: true,
           lineStyle: { width: 3 },
         },
       ],
     }),
-    [theme],
+    [theme, revenueData],
   );
 
   const trafficOption = useMemo(
     () => ({
       backgroundColor: "transparent",
-      tooltip: {
-        trigger: "item",
-        formatter: "{b}<br/>{c} sessions ({d}%)",
-      },
+      tooltip: { trigger: "item", formatter: "{b}<br/>{c} sessions ({d}%)" },
       legend: {
         bottom: "0%",
         textStyle: { color: theme.colors.text.secondary },
@@ -125,24 +127,18 @@ export const Analytics = () => {
             formatter: "{b}\n{d}%",
             color: theme.colors.text.primary,
           },
-          data: [
-            { value: 18500, name: "Organic Search" },
-            { value: 14200, name: "Google Ads" },
-            { value: 9800, name: "Social Media" },
-            { value: 6500, name: "Referral" },
-            { value: 3200, name: "Email Campaigns" },
-          ],
+          data: trafficData,
         },
       ],
     }),
-    [theme],
+    [theme, trafficData],
   );
 
   return (
     <PageContainer>
       <DashboardSection title="Analytics">
         <CardGrid>
-          {kpiData.map((item) => (
+          {kpis.map((item) => (
             <KpiCard key={item.title} {...item} />
           ))}
         </CardGrid>
@@ -156,7 +152,6 @@ export const Analytics = () => {
               opts={{ renderer: "canvas" }}
             />
           </ChartCard>
-
           <ChartCard>
             <ReactECharts
               ref={trafficRef}

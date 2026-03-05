@@ -1,0 +1,20 @@
+{
+  "kpis": [
+    { "title": "Total Revenue (MTD)", "value": "$30,000" },
+    { "title": "Marketing Spend (MTD)", "value": "$17,000" },
+    { "title": "ROAS", "value": "1.76x" },
+    { "title": "Customer Acquisition Cost", "value": "$42" }
+  ],
+  "revenue": {
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    "revenue": [12000, 15000, 18000, 21000, 25000, 30000],
+    "ad_spend": [8000, 9000, 11000, 13000, 15000, 17000]
+  },
+  "traffic": [
+    { "value": 18500, "name": "Organic Search" },
+    { "value": 14200, "name": "Google Ads" },
+    { "value": 9800, "name": "Social Media" },
+    { "value": 6500, "name": "Referral" },
+    { "value": 3200, "name": "Email Campaigns" }
+  ]
+}

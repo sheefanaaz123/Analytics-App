@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Table, Tag, Button, Select, DatePicker, message } from "antd";
 import styled from "styled-components";
 import PageContainer from "../components/layout/PageContainer";
 import { DashboardSection } from "../components/common/DashboardSection";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
 const { RangePicker } = DatePicker;
@@ -52,36 +53,19 @@ const StyledTable = styled(Table)`
   }
 `;
 
-const initialData = [
-  {
-    key: "1",
-    name: "Sales Report",
-    created: "2026-02-12",
-    status: "Completed",
-    type: "Sales",
-  },
-  {
-    key: "2",
-    name: "User Growth",
-    created: "2026-02-10",
-    status: "Processing",
-    type: "Users",
-  },
-  {
-    key: "3",
-    name: "Revenue Report",
-    created: "2026-02-08",
-    status: "Failed",
-    type: "Sales",
-  },
-];
-
 export const Reports = () => {
-  const [reports, setReports] = useState(initialData);
+  const [reports, setReports] = useState<any[]>([]);
   const [category, setCategory] = useState("All");
   const [dateRange, setDateRange] = useState<
     [Dayjs | null, Dayjs | null] | null
   >(null);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/reports")
+      .then((res) => res.json())
+      .then(setReports)
+      .catch((err) => console.error("Error fetching reports:", err));
+  }, []);
 
   const filteredData = useMemo(() => {
     return reports.filter((item) => {

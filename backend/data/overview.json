@@ -1,0 +1,37 @@
+{
+  "kpis": [
+    {
+      "title": "Revenue (This Month)",
+      "value": "$30,000",
+      "trend": "+12% vs last month",
+      "positive": true
+    },
+    {
+      "title": "New Customers",
+      "value": "712",
+      "trend": "+8% vs last month",
+      "positive": true
+    },
+    {
+      "title": "Active Users",
+      "value": "5,482",
+      "trend": "+5% vs last month",
+      "positive": true
+    },
+    {
+      "title": "Conversion Rate",
+      "value": "5.4%",
+      "trend": "-1.2% vs last month",
+      "positive": false
+    }
+  ],
+  "revenue": {
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    "data2025": [4000, 3000, 5000, 4780, 5890, 6390],
+    "data2024": [3500, 2800, 4200, 4500, 5200, 6000]
+  },
+  "usersGrowth": {
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    "data": [2200, 2800, 3400, 3900, 4700, 5482]
+  }
+}
