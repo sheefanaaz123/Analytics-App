@@ -5,6 +5,7 @@ import PageContainer from "../components/layout/PageContainer";
 import { DashboardSection } from "../components/common/DashboardSection";
 import { useMemo, useState, useEffect } from "react";
 import dayjs, { Dayjs } from "dayjs";
+import { VITE_BACKEND_URL } from "../constants";
 
 const { RangePicker } = DatePicker;
 
@@ -61,7 +62,7 @@ export const Reports = () => {
   >(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/reports")
+    fetch(`${VITE_BACKEND_URL}/api/reports`)
       .then((res) => res.json())
       .then(setReports)
       .catch((err) => console.error("Error fetching reports:", err));

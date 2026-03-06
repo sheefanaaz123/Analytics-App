@@ -6,6 +6,7 @@ import { KpiCard } from "../components/ui/KpiCard";
 import { DashboardSection } from "../components/common/DashboardSection";
 import CardGrid from "../components/common/CardGrid";
 import { TwoColumnGrid } from "../components/common/TwoGridColumn";
+import { VITE_BACKEND_URL } from "../constants";
 
 const ChartCard = styled.div`
   background: ${({ theme }) => theme.colors.background.surface};
@@ -42,17 +43,17 @@ export const Analytics = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/analytics/kpis")
+    fetch(`${VITE_BACKEND_URL}/api/analytics/kpis`)
       .then((res) => res.json())
       .then(setKpis)
       .catch(console.error);
 
-    fetch("http://127.0.0.1:5000/api/analytics/revenue")
+    fetch(`${VITE_BACKEND_URL}/api/analytics/revenue`)
       .then((res) => res.json())
       .then(setRevenueData)
       .catch(console.error);
 
-    fetch("http://127.0.0.1:5000/api/analytics/traffic")
+    fetch(`${VITE_BACKEND_URL}/api/analytics/traffic`)
       .then((res) => res.json())
       .then(setTrafficData)
       .catch(console.error);
