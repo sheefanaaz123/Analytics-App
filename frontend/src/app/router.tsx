@@ -4,6 +4,7 @@ import Overview from "../pages/Overview";
 import { Settings } from "../pages/Setting";
 import { Analytics } from "../pages/Analytics";
 import { Reports } from "../pages/Reports";
+import { Insights } from "../pages/Insights";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: "/reports",
         element: <Reports />,
+      },
+      {
+        path: "/insights",
+        element: <Insights />,
       },
     ],
   },

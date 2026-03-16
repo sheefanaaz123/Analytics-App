@@ -6,6 +6,7 @@ import {
   FileTextOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+import InsightsOutlined from "@mui/icons-material/InsightsOutlined";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled, { useTheme } from "styled-components";
 
@@ -69,6 +70,7 @@ export const SideBar: React.FC = () => {
     { key: "/", icon: <DashboardOutlined />, label: "Overview" },
     { key: "/analytics", icon: <BarChartOutlined />, label: "Analytics" },
     { key: "/reports", icon: <FileTextOutlined />, label: "Reports" },
+    { key: "/insights", icon: <InsightsOutlined />, label: "Smart Insights " },
   ];
 
   return (

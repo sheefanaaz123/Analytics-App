@@ -4,6 +4,7 @@ import os
 from routes.overview import overview_bp
 from routes.reports import reports_bp
 from routes.analytics import analytics_bp
+from routes.insights import insights_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -11,6 +12,7 @@ CORS(app)
 app.register_blueprint(overview_bp, url_prefix="/api/overview")
 app.register_blueprint(reports_bp)
 app.register_blueprint(analytics_bp)
+app.register_blueprint(insights_bp, url_prefix="/api")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000)) 
