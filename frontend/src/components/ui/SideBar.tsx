@@ -67,10 +67,18 @@ export const SideBar: React.FC = () => {
   const theme = useTheme();
 
   const menuItems = [
-    { key: "/", icon: <DashboardOutlined />, label: "Overview" },
-    { key: "/analytics", icon: <BarChartOutlined />, label: "Analytics" },
-    { key: "/reports", icon: <FileTextOutlined />, label: "Reports" },
-    { key: "/insights", icon: <InsightsOutlined />, label: "Smart Insights " },
+    { key: "/dashboard", icon: <DashboardOutlined />, label: "Overview" },
+    {
+      key: "/dashboard/analytics",
+      icon: <BarChartOutlined />,
+      label: "Analytics",
+    },
+    { key: "/dashboard/reports", icon: <FileTextOutlined />, label: "Reports" },
+    {
+      key: "/dashboard/insights",
+      icon: <InsightsOutlined />,
+      label: "Smart Insights ",
+    },
   ];
 
   return (
@@ -95,7 +103,11 @@ export const SideBar: React.FC = () => {
           selectedKeys={[location.pathname]}
           onClick={({ key }) => navigate(key)}
           items={[
-            { key: "/settings", icon: <SettingOutlined />, label: "Settings" },
+            {
+              key: "/dashboard/settings",
+              icon: <SettingOutlined />,
+              label: "Settings",
+            },
           ]}
         />
       </BottomMenu>

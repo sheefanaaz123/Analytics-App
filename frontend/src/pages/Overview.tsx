@@ -8,6 +8,7 @@ import { DashboardSection } from "../components/common/DashboardSection";
 import CardGrid from "../components/common/CardGrid";
 import { TwoColumnGrid } from "../components/common/TwoGridColumn";
 import { VITE_BACKEND_URL } from "../constants";
+import { authFetch } from "../utils/api";
 
 const ChartCard = styled.div`
   background: ${({ theme }) => theme.colors.background.surface};
@@ -30,17 +31,17 @@ const Overview = () => {
   const [usersGrowthData, setUsersGrowthData] = useState<any | null>(null);
 
   useEffect(() => {
-    fetch(`${VITE_BACKEND_URL}/api/overview/kpis`)
+    authFetch(`${VITE_BACKEND_URL}/api/overview/kpis`)
       .then((res) => res.json())
       .then(setKpis)
       .catch((err) => console.error("Error fetching KPIs:", err));
 
-    fetch(`${VITE_BACKEND_URL}/api/overview/revenue`)
+    authFetch(`${VITE_BACKEND_URL}/api/overview/revenue`)
       .then((res) => res.json())
       .then(setRevenueData)
       .catch((err) => console.error("Error fetching revenue data:", err));
 
-    fetch(`${VITE_BACKEND_URL}/api/overview/users-growth`)
+    authFetch(`${VITE_BACKEND_URL}/api/overview/users-growth`)
       .then((res) => res.json())
       .then(setUsersGrowthData)
       .catch((err) => console.error("Error fetching users growth data:", err));

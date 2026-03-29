@@ -3,6 +3,7 @@ import styled from "styled-components";
 import PageContainer from "../components/layout/PageContainer";
 import { DashboardSection } from "../components/common/DashboardSection";
 import { VITE_BACKEND_URL } from "../constants";
+import { authFetch } from "../utils/api";
 
 interface InsightResponse {
   summary: string;
@@ -59,7 +60,7 @@ export const Insights = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${VITE_BACKEND_URL}/api/smart-summary`)
+    authFetch(`${VITE_BACKEND_URL}/api/smart-summary`)
       .then((res) => res.json())
       .then((res) => {
         setData(res);

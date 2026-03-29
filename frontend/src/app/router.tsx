@@ -5,31 +5,42 @@ import { Settings } from "../pages/Setting";
 import { Analytics } from "../pages/Analytics";
 import { Reports } from "../pages/Reports";
 import { Insights } from "../pages/Insights";
+import { Login } from "../pages/Login";
+import ProtectedRoute from "../components/ui/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <DashboardLayout />,
+    element: <Login />,
+  },
+  {
+    element: <ProtectedRoute />,
     children: [
       {
-        index: true,
-        element: <Overview />,
-      },
-      {
-        path: "/settings",
-        element: <Settings />,
-      },
-      {
-        path: "/analytics",
-        element: <Analytics />,
-      },
-      {
-        path: "/reports",
-        element: <Reports />,
-      },
-      {
-        path: "/insights",
-        element: <Insights />,
+        path: "/dashboard",
+        element: <DashboardLayout />,
+        children: [
+          {
+            index: true,
+            element: <Overview />,
+          },
+          {
+            path: "settings",
+            element: <Settings />,
+          },
+          {
+            path: "analytics",
+            element: <Analytics />,
+          },
+          {
+            path: "reports",
+            element: <Reports />,
+          },
+          {
+            path: "insights",
+            element: <Insights />,
+          },
+        ],
       },
     ],
   },

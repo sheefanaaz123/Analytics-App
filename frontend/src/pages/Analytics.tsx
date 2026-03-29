@@ -7,6 +7,7 @@ import { DashboardSection } from "../components/common/DashboardSection";
 import CardGrid from "../components/common/CardGrid";
 import { TwoColumnGrid } from "../components/common/TwoGridColumn";
 import { VITE_BACKEND_URL } from "../constants";
+import { authFetch } from "../utils/api";
 
 const ChartCard = styled.div`
   background: ${({ theme }) => theme.colors.background.surface};
@@ -43,17 +44,17 @@ export const Analytics = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${VITE_BACKEND_URL}/api/analytics/kpis`)
+    authFetch(`${VITE_BACKEND_URL}/api/analytics/kpis`)
       .then((res) => res.json())
       .then(setKpis)
       .catch(console.error);
 
-    fetch(`${VITE_BACKEND_URL}/api/analytics/revenue`)
+    authFetch(`${VITE_BACKEND_URL}/api/analytics/revenue`)
       .then((res) => res.json())
       .then(setRevenueData)
       .catch(console.error);
 
-    fetch(`${VITE_BACKEND_URL}/api/analytics/traffic`)
+    authFetch(`${VITE_BACKEND_URL}/api/analytics/traffic`)
       .then((res) => res.json())
       .then(setTrafficData)
       .catch(console.error);

@@ -6,6 +6,7 @@ import { DashboardSection } from "../components/common/DashboardSection";
 import { useMemo, useState, useEffect } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { VITE_BACKEND_URL } from "../constants";
+import { authFetch } from "../utils/api";
 
 const { RangePicker } = DatePicker;
 
@@ -62,7 +63,7 @@ export const Reports = () => {
   >(null);
 
   useEffect(() => {
-    fetch(`${VITE_BACKEND_URL}/api/reports`)
+    authFetch(`${VITE_BACKEND_URL}/api/reports`)
       .then((res) => res.json())
       .then(setReports)
       .catch((err) => console.error("Error fetching reports:", err));

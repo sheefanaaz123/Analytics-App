@@ -3,6 +3,7 @@ import json
 import os
 import re
 from google import genai
+from utils.auth import verify_token
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,6 +26,7 @@ def read_overview_data():
 
 
 @insights_bp.route("/smart-summary")
+@verify_token
 def get_ai_insights():
 
     data = read_overview_data()
