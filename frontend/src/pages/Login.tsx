@@ -190,6 +190,8 @@ export const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  console.log(loading, error);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
