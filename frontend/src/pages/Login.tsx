@@ -137,6 +137,11 @@ const Input = styled.input`
   border: 1px solid ${({ theme }) => theme.colors.border.default};
   margin-bottom: 18px;
 
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
   background: ${({ theme }) => theme.colors.background.default};
   color: ${({ theme }) => theme.colors.text.primary};
 
@@ -149,14 +154,35 @@ const Input = styled.input`
   }
 `;
 
-const Button = styled.button`
+const Spinner = styled.div`
+  width: 16px;
+  height: 16px;
+  border: 2px solid ${({ theme }) => theme.colors.border.default};
+  border-top-color: ${({ theme }) => theme.colors.primary.contrastText};
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const Button = styled.button<{ $loading?: boolean }>`
   width: 100%;
   padding: 13px;
+
   border-radius: ${({ theme }) => theme.radius.lg};
   border: none;
-  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
   font-weight: 600;
-  margin-top: 6px;
 
   background: linear-gradient(
     135deg,
@@ -166,9 +192,17 @@ const Button = styled.button`
 
   color: white;
 
+  cursor: ${({ $loading }) => ($loading ? "not-allowed" : "pointer")};
+
+  opacity: ${({ $loading }) => ($loading ? 0.85 : 1)};
+
   transition: all 0.25s ease;
 
-  &:hover {
+  &:disabled {
+    pointer-events: none;
+  }
+
+  &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(99, 102, 241, 0.45);
   }
@@ -246,6 +280,7 @@ export const Login = () => {
             <form onSubmit={handleLogin}>
               <Label>Work Email</Label>
               <Input
+                disabled={loading}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -253,12 +288,22 @@ export const Login = () => {
 
               <Label>Password</Label>
               <Input
+                disabled={loading}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              <Button type="submit">Access Dashboard</Button>
+              <Button type="submit" disabled={loading} $loading={loading}>
+                {loading ? (
+                  <>
+                    <Spinner />
+                    Signing In...
+                  </>
+                ) : (
+                  "Access Dashboard"
+                )}
+              </Button>
             </form>
 
             <FooterText>Secure access for authorized team members</FooterText>
