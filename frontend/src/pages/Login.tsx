@@ -12,9 +12,13 @@ const PageWrapper = styled.div`
   grid-template-columns: 1.1fr 0.9fr;
   background: ${({ theme }) => theme.colors.background.default};
   position: relative;
-  overflow: hidden;
+  overflow: auto;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 
@@ -31,6 +35,7 @@ const PageWrapper = styled.div`
     top: -200px;
     left: -200px;
     filter: blur(80px);
+    pointer-events: none;
   }
 
   &:after {
@@ -46,6 +51,7 @@ const PageWrapper = styled.div`
     bottom: -150px;
     right: -150px;
     filter: blur(80px);
+    pointer-events: none;
   }
 `;
 
@@ -55,8 +61,9 @@ const LeftSection = styled.div`
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 40px;
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     display: none;
   }
 `;
@@ -65,24 +72,43 @@ const Illustration = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
-  max-width: 900px;
-
+  max-width: 700px;
+  max-height: 90vh;
   filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.35));
 `;
 
+/* KEY FIX: center both axes, remove align-items: flex-start */
 const LoginSection = styled.div`
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 40px;
+  align-items: center;
+  padding: 40px 32px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    padding: 32px 20px;
+    min-height: 100vh;
+  }
+
+  @media (max-width: 400px) {
+    padding: 24px 16px;
+  }
 `;
 
+/* KEY FIX: fluid width instead of fixed 420px */
 const RightSection = styled.div`
-  width: 420px;
+  width: 100%;
+  max-width: 440px;
+
+  @media (max-width: 480px) {
+    max-width: 100%;
+  }
 `;
 
 const BrandingTitle = styled.h1`
-  font-size: 40px;
+  font-size: clamp(28px, 4vw, 40px);
   font-weight: 700;
   margin-bottom: 8px;
   letter-spacing: -0.5px;
@@ -90,28 +116,29 @@ const BrandingTitle = styled.h1`
 `;
 
 const BrandingSubtitle = styled.p`
-  font-size: 16px;
+  font-size: clamp(13px, 1.5vw, 16px);
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const LoginCard = styled.div`
   padding: 36px;
   border-radius: ${({ theme }) => theme.radius.lg};
-
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(14px);
-
   border: 1px solid ${({ theme }) => theme.colors.border.default};
-
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  @media (max-width: 480px) {
+    padding: 24px 20px;
+  }
 `;
 
 const Title = styled.h2`
-  font-size: 22px;
+  font-size: clamp(18px, 2.5vw, 22px);
   font-weight: 600;
   margin-bottom: 6px;
   color: ${({ theme }) => theme.colors.text.primary};
@@ -136,6 +163,7 @@ const Input = styled.input`
   border-radius: ${({ theme }) => theme.radius.lg};
   border: 1px solid ${({ theme }) => theme.colors.border.default};
   margin-bottom: 18px;
+  box-sizing: border-box;
 
   &:disabled {
     opacity: 0.7;
@@ -144,7 +172,6 @@ const Input = styled.input`
 
   background: ${({ theme }) => theme.colors.background.default};
   color: ${({ theme }) => theme.colors.text.primary};
-
   transition: all 0.2s ease;
 
   &:focus {
@@ -160,8 +187,8 @@ const Spinner = styled.div`
   border: 2px solid ${({ theme }) => theme.colors.border.default};
   border-top-color: ${({ theme }) => theme.colors.primary.contrastText};
   border-radius: 50%;
-
   animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
 
   @keyframes spin {
     to {
@@ -173,29 +200,22 @@ const Spinner = styled.div`
 const Button = styled.button<{ $loading?: boolean }>`
   width: 100%;
   padding: 13px;
-
   border-radius: ${({ theme }) => theme.radius.lg};
   border: none;
-
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-
   font-weight: 600;
-
+  font-size: 15px;
   background: linear-gradient(
     135deg,
     ${({ theme }) => theme.colors.primary.main},
     ${({ theme }) => theme.colors.primary.dark}
   );
-
   color: white;
-
   cursor: ${({ $loading }) => ($loading ? "not-allowed" : "pointer")};
-
   opacity: ${({ $loading }) => ($loading ? 0.85 : 1)};
-
   transition: all 0.25s ease;
 
   &:disabled {
@@ -217,10 +237,8 @@ const FooterText = styled.p`
 
 export const Login = () => {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("admin@gmail.com");
   const [password, setPassword] = useState("admin5432");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -230,7 +248,6 @@ export const Login = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const response = await authFetch(`${VITE_BACKEND_URL}/api/auth/login`, {
         method: "POST",
@@ -239,13 +256,10 @@ export const Login = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       message.success("Login successful");
@@ -263,20 +277,16 @@ export const Login = () => {
       <LeftSection>
         <Illustration src={LoginPage} alt="Analytics dashboard illustration" />
       </LeftSection>
-
       <LoginSection>
         <RightSection>
           <BrandingTitle>Analytics Platform</BrandingTitle>
-
           <BrandingSubtitle>
             Monitor your business performance, analyze trends, and gain insights
             through powerful dashboards.
           </BrandingSubtitle>
-
           <LoginCard>
             <Title>Welcome Back</Title>
             <Subtitle>Sign in to access your analytics dashboard</Subtitle>
-
             <form onSubmit={handleLogin}>
               <Label>Work Email</Label>
               <Input
@@ -285,7 +295,6 @@ export const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-
               <Label>Password</Label>
               <Input
                 disabled={loading}
@@ -293,7 +302,6 @@ export const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-
               <Button type="submit" disabled={loading} $loading={loading}>
                 {loading ? (
                   <>
@@ -305,7 +313,6 @@ export const Login = () => {
                 )}
               </Button>
             </form>
-
             <FooterText>Secure access for authorized team members</FooterText>
           </LoginCard>
         </RightSection>
