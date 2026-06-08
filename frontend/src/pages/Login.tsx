@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import LoginPage from "../assets/LoginPage.png";
 import { VITE_BACKEND_URL } from "../constants";
 import { message } from "antd";
+import { GoogleLogin } from "@react-oauth/google";
 import { authFetch } from "../utils/api";
 
 const PageWrapper = styled.div`
@@ -272,6 +273,32 @@ export const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      const response = await fetch(
+        `${VITE_BACKEND_URL}/api/auth/google-login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            credential: credentialResponse.credential,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <PageWrapper>
       <LeftSection>
@@ -312,6 +339,15 @@ export const Login = () => {
                   "Access Dashboard"
                 )}
               </Button>
+
+              <div style={{ marginTop: "20px" }}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    message.error("Google Login Failed");
+                  }}
+                />
+              </div>
             </form>
             <FooterText>Secure access for authorized team members</FooterText>
           </LoginCard>
