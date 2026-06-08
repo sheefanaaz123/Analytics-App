@@ -4,6 +4,7 @@ import os
 import re
 from google import genai
 from utils.auth import verify_token
+from agents.insight_graph import graph
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,43 +29,23 @@ def read_overview_data():
 @insights_bp.route("/smart-summary")
 @verify_token
 def get_ai_insights():
-
-    data = read_overview_data()
-
-    prompt = f"""
-You are an AI analyst for a SaaS analytics dashboard called InsightIQ.
-
-Analyze this dashboard data:
-
-{json.dumps(data)}
-
-Return ONLY valid JSON in this format:
-
-{{
- "summary": "short overview of the most important trend",
- "insights": [
-   "insight 1",
-   "insight 2",
-   "insight 3"
- ],
- "recommendation": "one actionable suggestion"
-}}
-
-Rules:
-- No markdown
-- No explanation outside JSON
-"""
-
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+        data = read_overview_data()
 
-        text = response.text
-        text = re.sub(r"```json|```", "", text).strip()
+        result = graph.invoke({
+            "data": data
+        })
 
-        return jsonify(json.loads(text))
+        return jsonify({
+            "summary": result["trends"],
+            "insights": [
+                result["trends"],
+                result["risks"]
+            ],
+            "recommendation": result["recommendation"]
+        })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "error": str(e)
+        }), 500

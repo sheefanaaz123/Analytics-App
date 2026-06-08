@@ -3,6 +3,8 @@ import json
 import os
 import jwt
 import datetime
+# from google.oauth2 import id_token
+# from google.auth.transport import requests
 
 login_bp = Blueprint("login", __name__)
 
@@ -51,3 +53,47 @@ def login():
             "email": user["email"]
         }
     }), 200
+    
+    
+    
+# @login_bp.route("/google-login", methods=["POST"])
+# def google_login():
+
+#     data = request.get_json()
+
+#     credential = data.get("credential")
+
+#     try:
+
+#         google_user = id_token.verify_oauth2_token(
+#             credential,
+#             requests.Request(),
+#             os.getenv("GOOGLE_CLIENT_ID")
+#         )
+
+#         email = google_user["email"]
+#         name = google_user["name"]
+
+#         token = jwt.encode(
+#             {
+#                 "email": email,
+#                 "name": name,
+#                 "exp": datetime.datetime.utcnow()
+#                 + datetime.timedelta(hours=1)
+#             },
+#             current_app.config["SECRET_KEY"],
+#             algorithm="HS256"
+#         )
+
+#         return jsonify({
+#             "token": token,
+#             "user": {
+#                 "name": name,
+#                 "email": email
+#             }
+#         })
+
+#     except Exception as e:
+#         return jsonify({
+#             "message": str(e)
+#         }), 401
